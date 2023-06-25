@@ -12,7 +12,10 @@ import { Flavor } from './flavor.entity';
 export class Coffee {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
+  @Column({
+    unique: true,
+    nullable: false,
+  })
   name: string;
   @Column()
   brand: string;
