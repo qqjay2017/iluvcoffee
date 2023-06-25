@@ -11,11 +11,11 @@ export class CoffeesService {
     @InjectRepository(Coffee)
     private readonly cofferRepository: Repository<Coffee>,
   ) {}
-  async findAll() {
+  findAll() {
     return this.cofferRepository.find();
   }
   async findOne(id: number) {
-    const coffee = this.cofferRepository.findOne({
+    const coffee = await this.cofferRepository.findOne({
       where: {
         id,
       },
@@ -25,7 +25,7 @@ export class CoffeesService {
     }
     return coffee;
   }
-  async create(createCoffeeDto: CreateCoffeeDto) {
+  create(createCoffeeDto: CreateCoffeeDto) {
     const coffee = this.cofferRepository.create(createCoffeeDto);
     return this.cofferRepository.save(coffee);
   }
