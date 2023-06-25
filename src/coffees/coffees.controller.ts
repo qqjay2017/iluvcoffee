@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -11,14 +12,14 @@ import {
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
+import { PaginationQuery } from './dto/pagination-query.dto';
 
 @Controller('coffees')
 export class CoffeesController {
   constructor(private readonly coffeesService: CoffeesService) {}
   @Get()
-  findAll(@Query() paginationQuery) {
-    const { limit, offset } = paginationQuery;
-    return this.coffeesService.findAll();
+  findAll(@Query() paginationQuery: PaginationQuery) {
+    return this.coffeesService.findAll(paginationQuery);
   }
 
   @Get(':id')
@@ -38,5 +39,14 @@ export class CoffeesController {
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.coffeesService.remove(id);
+  }
+
+  @Post(':id/recommend')
+  async recommendCoffee(@Param('id') id: number) {
+    const coffee = await this.coffeesService.findOne(id);
+    if (!coffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
+    }
+    return this.coffeesService.recommendCoffee(coffee);
   }
 }
