@@ -1,22 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Coffee } from './entities/coffee.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CoffeesService {
-  findAll() {
-    console.log('1');
+  constructor(
+    @InjectRepository(Coffee)
+    private readonly cofferRepository: Repository<Coffee>,
+  ) {}
+  async findAll() {
+    return this.cofferRepository.find();
   }
-  findOne(id: number) {
-    console.log(id);
+  async findOne(id: number) {
+    const coffee = this.cofferRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!coffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
+    }
+    return coffee;
   }
-  create(createCoffeeDto: CreateCoffeeDto) {
-    console.log(createCoffeeDto);
+  async create(createCoffeeDto: CreateCoffeeDto) {
+    const coffee = this.cofferRepository.create(createCoffeeDto);
+    return this.cofferRepository.save(coffee);
   }
-  update(id: number, updateCofferDto: UpdateCoffeeDto) {
-    console.log(id);
+  async update(id: number, updateCofferDto: UpdateCoffeeDto) {
+    const coffee = await this.cofferRepository.preload({
+      id,
+      ...updateCofferDto,
+    });
+    if (!coffee) {
+      throw new NotFoundException(`Coffee #${id} not found`);
+    }
+    return this.cofferRepository.save(coffee);
   }
-  remove(id: number) {
-    console.log(id);
+  async remove(id: number) {
+    const coffee = await this.findOne(id);
+    return this.cofferRepository.remove(coffee);
   }
 }
