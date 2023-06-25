@@ -8,15 +8,17 @@ import { CoffeeRatingModule } from './coffee-rating/coffee-rating.module';
 @Module({
   imports: [
     CoffeesModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'testDB',
-      autoLoadEntities: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+        type: 'postgres',
+        host: 'localhost',
+        port: 5432,
+        username: 'postgres',
+        password: 'postgres',
+        database: 'testDB',
+        autoLoadEntities: true,
+        synchronize: true,
+      }),
     }),
     CoffeeRatingModule,
   ],

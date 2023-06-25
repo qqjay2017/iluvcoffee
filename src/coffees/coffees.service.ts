@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,7 +8,10 @@ import { Flavor } from './entities/flavor.entity';
 import { PaginationQuery } from './dto/pagination-query.dto';
 import { Event } from 'src/events/entities/event.entity';
 
-@Injectable()
+@Injectable({
+  // 请求了才会被初始化
+  scope: Scope.REQUEST,
+})
 export class CoffeesService {
   constructor(
     @InjectRepository(Coffee)
